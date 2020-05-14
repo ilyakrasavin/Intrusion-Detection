@@ -1,0 +1,83 @@
+
+# Getting Data 1 - 5.
+table_anomaly1 <- read.table("~/Desktop/cmpt318groupproject/Test_Data_with_Injected_Anomalies/test1.txt", header = TRUE, sep = ",")
+
+###########################################
+# Test Data 1.
+table_anomaly1$Date <- as.POSIXlt(table_anomaly1$Date, format = "%d/%m/%Y")
+table_omit_anomaly1 <- na.omit(table_anomaly1, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+
+
+table_week_anomaly1 <- table_omit_anomaly1[which(weekdays(as.Date(table_anomaly1$Date, format = "%m/%d/%Y"))
+                                               %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
+table_week_anomaly1['day'] <- weekdays(as.Date(table_week_anomaly1$Date, format = "%m/%d/%Y"))
+
+
+table_weekend_anomaly1 <- table_omit_anomaly1[which(weekdays(as.Date(table_anomaly1$Date, format = "%m/%d/%Y"))
+                                                  %in% c('Saturday','Sunday')),]
+table_weekend_anomaly1['day'] <- weekdays(as.Date(table_week_anomaly1$Date, format = "%m/%d/%Y"))
+
+
+# Extract a year of data (31/12/2009 to 1/1/2010)
+
+
+table_day_time_weekday1 <- table_week_anomaly1[strptime(table_week_anomaly1$Time, format = "%H:%M:%S") >= 
+                                                 strptime("07:00:00", format = "%H:%M:%S") & 
+                                                 strptime(table_week_anomaly1$Time, format = "%H:%M:%S") <=
+                                                 strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset_weekday1 <- subset(table_day_time_weekday1, as.Date(table_day_time_weekday1$Date) >= as.Date("2009-12-31") & as.Date(table_day_time_weekday1$Date) <= as.Date("2010-01-01") )
+
+
+
+table_day_time_weekend1 <- table_weekend_anomaly1[strptime(table_weekend_anomaly1$Time, format = "%H:%M:%S") >= 
+                                                    strptime("07:00:00", format = "%H:%M:%S") & 
+                                                    strptime(table_weekend_anomaly1$Time, format = "%H:%M:%S") <=
+                                                    strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset_weekend1 <- subset(table_day_time_weekend1, as.Date(table_day_time_weekend1$Date) >= as.Date("2009-12-31") & as.Date(table_day_time_weekend1$Date) <= as.Date("2010-01-01") )
+
+
+n_times_weekday_morning_train <- nrow(tableSubset_weekday1)
+n_times_weekend_morning_train <- nrow(tableSubset_weekend1)
+
+# 15 State model - Weekday Univariate
+mod15weekday <- depmix(response = Global_active_power ~ 1, data = tableSubset_weekday1, nstates = 15)
+fm15weekday <- fit(mod15weekday)
+
+#  17 State model - Weekend Univariate.
+mod17weekend <- depmix(response = Global_active_power ~ 1, data = tableSubset_weekend1, nstates = 17)
+fm17weekend <- fit(mod17weekday)
+
+# 18 State model - Weekday Multivariate
+weekday_model_train_18 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), 
+                                          data = tableSubset_weekday1, 
+                                          nstates = 18, 
+                                          ntimes=n_times_weekday_morning_train, 
+                                          family = list(gaussian(), gaussian(), gaussian()))
+weekend_model_train_fit_18 <- fit(weekday_model_train_18,em=em.control(maxit = 2000))
+
+
+# 19 State model - Weekend Multivariate.
+weekend_saturday_model_train_19 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), 
+                                          data = tableSubset_weekend1, 
+                                          nstates = 19, 
+                                          ntimes=n_times_weekend_morning_train, 
+                                          family = list(gaussian(), gaussian(), gaussian()))
+weekend_model_train_fit_19 <- fit(weekend_saturday_model_train_19,em=em.control(maxit = 2000))
+
+
+
+# Weekday Univariate
+summary(fm15weekday)
+print(fm15weekday)
+
+# Weekday Multivarite
+summary(weekend_model_train_fit_18)
+print(weekend_model_train_fit_18)
+
+# Weekend Univeriate
+summary(fm17weekend)
+print(fm17weekend)
+
+# Weekend Multivariate
+summary(weekend_model_train_fit_19 )
+print(weekend_model_train_fit_19 )
