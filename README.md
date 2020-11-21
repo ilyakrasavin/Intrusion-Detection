@@ -22,7 +22,8 @@ This phase includes HMM training, testing and Anomaly Detection.
 
 
 ## Part IV - Term Project
-The concluding phase is built on the experience with methods and knowledge acquired previously.
+The concluding phase is built on experience with methods and knowledge gained previously.
+Following steps are performed on an unseen fragment of data.
 - Principal Component Analysis (PCA)
 - Feature Engineering
 - Training and Testing
