@@ -1,31 +1,32 @@
+# Load Libraries
 library(psych)
 library(modeest)
 library(ggplot2)
 library(dplyr)
 library(depmixS4)
 
-set.seed(1)
-
 ######################################################
 
-# I.Data Exploration.
+# Part I - Data Exploration.
 
 # Choose best combination of observed responses.
 # Determine the time window on weekdays & weekends
 
-table <- read.table("C:/Users/Pheni/Documents/318/asgn1/cmpt318-assignment1/Phase 3/Data_Assignment3.txt", header = TRUE, sep = ",")
+table <- read.table("./Data_Part_3.txt", header = TRUE, sep = ",")
 
+# Format Dates as Posix Objects
 table$Date <- as.POSIXlt(table$Date, format = "%d/%m/%Y",na.rm = TRUE)
 
-# Weekdays Data.
+# Select Weekday data
 table_weekday <- table[which(weekdays(as.Date(table$Date, format = "%m/%d/%Y"))
                              %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday')), ]
-# Extracting the chosen time interval.
+# Extract a chosen sample time interval (Morning - 6am to 10am)
 table_weekday_Hours <- table_weekday[strptime(table_weekday$Time, format = "%H:%M:%S") >= 
                                        strptime("6:00:00", format = "%H:%M:%S") & 
                                        strptime(table_weekday$Time, format = "%H:%M:%S") <=
                                        strptime("10:00:00", format = "%H:%M:%S"),]
 
+# Visualize Weekday Series Data (Voltage, GlobalActivePower, GlobalIntensity)
 ggplot(data=table_weekday, mapping=aes(x=as.POSIXct(table_weekday$Time, format = "%H"), y=Voltage)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday$Time, format = "%H"), 1)))
 
@@ -36,17 +37,16 @@ ggplot(data=table_weekday, mapping=aes(x=as.POSIXct(table_weekday$Time, format =
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday$Time, format = "%H"), 1)))
 
 
-
-# Weekends Data.
+# Select Weekends Data
 table_weekend <- table[which(weekdays(as.Date(table$Date, format = "%m/%d/%Y"))
                              %in% c('Saturday','Sunday')), ]
-# Extracting the chosen time interval.
+# Extracting the chosen time interval (Mornings - 6am to 10pm)
 table_weekend_Hours <- table_weekend[strptime(table_weekend$Time, format = "%H:%M:%S") >= 
                                        strptime("06:00:00", format = "%H:%M:%S") & 
                                        strptime(table_weekend$Time, format = "%H:%M:%S") <=
                                        strptime("10:00:00", format = "%H:%M:%S"),]
 
-
+# Visualize Weekend Series (Voltage, GlobalActivePower, GlobalReactivePower)
 ggplot(data=table_weekend, mapping=aes(x=as.POSIXct(table_weekend$Time, format = "%H"), y=Voltage)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekend$Time, format = "%H"), 1)))
 
@@ -59,12 +59,11 @@ ggplot(data=table_weekend, mapping=aes(x=as.POSIXct(table_weekend$Time, format =
 
 ######################################################
 
+# Part II - Multivariate HMM Training & testing
 
-
-# II. Model Training.
-# Train + Test multivariate HMMs with different number of states.
-
-# PARTITION THE DATASETS INTO TRAIN AND TEST DATA.
+# Partition into Train/Test Subsets (Weekday and Weekend)
+# Considering 2 years of Data for Training Purposes
+# The rest 1 year of Data is to be used for Testing
 WeekdayTrain <- subset(table_weekday_Hours, as.Date(table_weekday_Hours$Date) >= as.Date("2006-12-18") & as.Date(table_weekday_Hours$Date) <= as.Date("2008-12-18") )
 ntimesWeekdayTrain <- nrow(WeekdayTrain)
 
@@ -78,7 +77,11 @@ WeekendTest <- subset(table_weekend_Hours, as.Date(table_weekend_Hours$Date) >= 
 ntimesWeekendTest <- nrow(WeekendTest)
 
 
-# TRAIN AND FIT THE TRAIN MODELS for Weekday/Weekend Data.
+# Initialize and Fit Multivariate Hidden Markov Models
+# Features Used - GlobalActivePower, GlobalIntensity, Voltage
+# Weekend and Weekday Models are Trained Separately
+# Iterations are limited at 2000 to prevent overfitting
+
 weekdayModelTrain4 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), data = WeekdayTrain, nstates = 4, ntimes=ntimesWeekdayTrain, family = list(gaussian(), gaussian(), gaussian()))
 weekdayModelTrainFit4 <- fit(weekdayModelTrain4,em=em.control(maxit = 2000))
 
@@ -194,9 +197,9 @@ weekendModelTrain16 <- depmix(response = list(Global_active_power~1, Global_inte
 weekendModelTrainFit16 <- fit(weekendModelTrain16 , em=em.control(maxit = 2000))
 
 
-# Compare models using BIC and Loc likelihood. WEEKDAY data.
+# Compare models using BIC and Loc likelihood. Weekdays data.
 plot(1:12,c(BIC(weekdayModelTrainFit4),BIC(weekdayModelTrainFit5),BIC(weekdayModelTrainFit6),BIC(weekdayModelTrainFit7),BIC(weekdayModelTrainFit8),BIC(weekdayModelTrainFit9),BIC(weekdayModelTrainFit10),BIC(weekdayModelTrainFit11), BIC(weekdayModelTrainFit12), BIC(weekdayModelTrainFit13), BIC(weekdayModelTrainFit14),BIC(weekdayModelTrainFit15), BIC(weekdayModelTrainFit16)),ty="b")
-# Compare models using BIC and Loc likelihood. WEEKEND data.
+# Compare models using BIC and Loc likelihood. Weekends data.
 plot(1:12,c(BIC(weekendModelTrainFit4),BIC(weekendModelTrainFit5),BIC(weekendModelTrainFit6),BIC(weekendModelTrainFit7),BIC(weekendModelTrainFit8),BIC(weekendModelTrainFit9),BIC(weekendModelTrainFit10),BIC(weekendModelTrainFit11), BIC(weekendModelTrainFit12), BIC(weekendModelTrainFit13), BIC(weekendModelTrainFit14),BIC(weekendModelTrainFit15), BIC(weekendModelTrainFit16)),ty="b")
 
 BIC_VALUE_WEEKDAY <- c(1206206,1137170,1082487,1060299,1031595,1010165,1003007,1004270,966987,950668,942754,926410,917576)
@@ -207,12 +210,15 @@ LOG_VALUE_WEEKEND <- c(-215681,-209266,-199288,-192553,-187630,-188466,-185355,-
 
 
 plot(BIC_VALUE_WEEKDAY, type ="o", col="blue")
+plot(BIC_VALUE_WEEKEND, type ="o", col="red")
 
+plot(LOG_VALUE_WEEKDAY, type ="o", col="blue")
+plot(LOG_VALUE_WEEKEND, type ="o", col="red")
 
 
 ######################################################
 
-# III. Model Testing.
+# Part III - Evaluation
 
 weekdayModelTest <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), data = WeekdayTrain, nstates = 11, ntimes=ntimesWeekdayTest, family = list(gaussian(), gaussian(), gaussian()))
 weekdayModelTest <- setpars(weekdayModelTest, getpars(weekdayModelTrainFit11))
