@@ -14,34 +14,42 @@ table <- read.table("./TrainData.txt", header = TRUE, sep = ",")
 table$Date <- as.POSIXlt(table$Date, format = "%d/%m/%Y")
 
 
-### Part I - Descriptive statistics
+# Part I - Descriptive statistics
 
+# Arithmetic Means
 GAPmean = mean(table$Global_active_power, na.rm = TRUE)
 GRPmean = mean(table$Global_reactive_power, na.rm = TRUE)
 VOLmean = mean(table$Voltage, na.rm = TRUE)
 
+# Geometric Means
 GAPGEOmean = geometric.mean(table$Global_active_power, na.rm = TRUE)
 GRPGEOmean = geometric.mean(table$Global_reactive_power, na.rm = TRUE)
 VOLGEOmean = geometric.mean(table$Voltage, na.rm = TRUE)
 
+# Medians
 GAPmed = median(table$Global_active_power, na.rm = TRUE)
 GRPmed = median(table$Global_reactive_power, na.rm = TRUE)
 VOLmed = median(table$Voltage, na.rm = TRUE)
 
+# Modes
 GAPMode = mfv(table$Global_active_power)
 GRPMode = mfv(table$Global_reactive_power)
 VOLMode = mfv(table$Voltage)
 
+# Standard Deviations
 GAPsd = sd(table$Global_active_power, na.rm = TRUE)
 GRPsd = sd(table$Global_reactive_power, na.rm = TRUE)
 VOLsd = sd(table$Voltage, na.rm = TRUE)
 
+# Stack it into columns
 GAP = c(GAPmean,GAPGEOmean, GAPmed, GAPMode, GAPsd)
 GRP = c(GRPmean,GRPGEOmean, GRPmed, GRPMode, GRPsd)
 VOL = c(VOLmean,VOLGEOmean, VOLmed, VOLMode, VOLsd)
 
+# Write to a dataframe
 df = data.frame(GAP, GRP, VOL)
 
+# Omit empty entries
 table_omit <- na.omit(table, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
 
 # Correlation Analysis
@@ -91,7 +99,7 @@ table_weekend_sunday <- table_omit[which(weekdays(as.Date(table_omit$Date, forma
                                          %in% c('Sunday')),]
 
 
-# Plot Monday (All Series)
+# Plot Monday (Active, Reactive and Intensity)
 ggplot(data=table_weekday_monday, mapping=aes(x=as.POSIXct(table_weekday_monday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_monday$Time, format = "%H"), 1)))
 ggplot(data=table_weekday_monday, mapping=aes(x=as.POSIXct(table_weekday_monday$Time, format = "%H"), y=Voltage)) +
@@ -100,7 +108,7 @@ ggplot(data=table_weekday_monday, mapping=aes(x=as.POSIXct(table_weekday_monday$
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_monday$Time, format = "%H"), 1)))
 
 
-# Plot Tuesday (All Series)
+# Plot Tuesday (Active, Reactive and Intensity)
 ggplot(data=table_weekday_tuesday, mapping=aes(x=as.POSIXct(table_weekday_tuesday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_tuesday$Time, format = "%H"), 1)))
 ggplot(data=table_weekday_tuesday, mapping=aes(x=as.POSIXct(table_weekday_tuesday$Time, format = "%H"), y=Voltage)) +
@@ -108,7 +116,8 @@ ggplot(data=table_weekday_tuesday, mapping=aes(x=as.POSIXct(table_weekday_tuesda
 ggplot(data=table_weekday_tuesday, mapping=aes(x=as.POSIXct(table_weekday_tuesday$Time, format = "%H"), y=Global_reactive_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_tuesday$Time, format = "%H"), 1)))
 
-# Plot Wednesday
+
+# Plot Wednesday (Active, Reactive and Intensity)
 ggplot(data=table_weekday_wednesday, mapping=aes(x=as.POSIXct(table_weekday_wednesday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_wednesday$Time, format = "%H"), 1)))
 ggplot(data=table_weekday_wednesday, mapping=aes(x=as.POSIXct(table_weekday_wednesday$Time, format = "%H"), y=Voltage)) +
@@ -116,7 +125,8 @@ ggplot(data=table_weekday_wednesday, mapping=aes(x=as.POSIXct(table_weekday_wedn
 ggplot(data=table_weekday_wednesday, mapping=aes(x=as.POSIXct(table_weekday_wednesday$Time, format = "%H"), y=Global_reactive_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_wednesday$Time, format = "%H"), 1)))
 
-# Plot Thursday (All Series)
+
+# Plot Thursday (Active, Reactive and Intensity)
 ggplot(data=table_weekday_thursday, mapping=aes(x=as.POSIXct(table_weekday_thursday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_thursday$Time, format = "%H"), 1)))
 ggplot(data=table_weekday_thursday, mapping=aes(x=as.POSIXct(table_weekday_thursday$Time, format = "%H"), y=Voltage)) +
@@ -124,7 +134,7 @@ ggplot(data=table_weekday_thursday, mapping=aes(x=as.POSIXct(table_weekday_thurs
 ggplot(data=table_weekday_thursday, mapping=aes(x=as.POSIXct(table_weekday_thursday$Time, format = "%H"), y=Global_reactive_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_thursday$Time, format = "%H"), 1)))
 
-# Plot Friday (All Series)
+# Plot Friday (Active, Reactive and Intensity)
 ggplot(data=table_weekday_friday, mapping=aes(x=as.POSIXct(table_weekday_friday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_friday$Time, format = "%H"), 1)))
 ggplot(data=table_weekday_friday, mapping=aes(x=as.POSIXct(table_weekday_friday$Time, format = "%H"), y=Voltage)) +
@@ -132,7 +142,7 @@ ggplot(data=table_weekday_friday, mapping=aes(x=as.POSIXct(table_weekday_friday$
 ggplot(data=table_weekday_friday, mapping=aes(x=as.POSIXct(table_weekday_friday$Time, format = "%H"), y=Global_reactive_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekday_friday$Time, format = "%H"), 1)))
 
-# Plot Saturday (All Series)
+# Plot Saturday (Active, Reactive and Intensity)
 ggplot(data=table_weekend_saturday, mapping=aes(x=as.POSIXct(table_weekend_saturday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekend_saturday$Time, format = "%H"), 1)))
 ggplot(data=table_weekend_saturday, mapping=aes(x=as.POSIXct(table_weekend_saturday$Time, format = "%H"), y=Voltage)) +
@@ -140,7 +150,7 @@ ggplot(data=table_weekend_saturday, mapping=aes(x=as.POSIXct(table_weekend_satur
 ggplot(data=table_weekend_saturday, mapping=aes(x=as.POSIXct(table_weekend_saturday$Time, format = "%H"), y=Global_reactive_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekend_saturday$Time, format = "%H"), 1)))
 
-# Plot Sunday (All Series)
+# Plot Sunday (Active, Reactive and Intensity)
 ggplot(data=table_weekend_sunday, mapping=aes(x=as.POSIXct(table_weekend_sunday$Time, format = "%H"), y=Global_active_power)) +
   geom_boxplot(aes(group=cut_width(as.POSIXct(table_weekend_sunday$Time, format = "%H"), 1)))
 ggplot(data=table_weekend_sunday, mapping=aes(x=as.POSIXct(table_weekend_sunday$Time, format = "%H"), y=Voltage)) +
@@ -191,7 +201,7 @@ ggplot(mapping=aes(x=Time, y=GAP_mean)) +
   geom_line(data=table_weekday_monday_GA_mean, mapping=aes(x=Time, y=prediction_polynomial_weekday_monday,group=1,color="red"), size=1) +
   scale_color_discrete(name = "Weekends", labels = c("Saturday","Sunday"))
 
-### weekends
+# Weekends
 table_weekend_saturday_GA_mean = table_weekend_saturday %>%
   group_by(Time) %>%
   summarise(GAP_mean=(mean(Global_active_power)))
@@ -216,6 +226,10 @@ ggplot(mapping=aes(x=Time, y=GAP_mean)) +
 
 # Part 2 - Feature Engineering
 
+# Proceeding under a rough assumption:
+# Monday - Daytime: Representative of Electricity Consumption on Weekdays
+# Saturday - Daytime: Representative of Electricity Consumption on Weekends
+
 table_weekday_monday_morning <- table_weekday_monday[strptime(table_weekday_monday$Time, format = "%H:%M:%S") >= 
                                                             strptime("07:00:00", format = "%H:%M:%S") & 
                                                             strptime(table_weekday_monday$Time, format = "%H:%M:%S") <=
@@ -229,9 +243,11 @@ table_weekend_saturday_morning <- table_weekend_saturday[strptime(table_weekend_
                                                             strptime("15:00:00", format = "%H:%M:%S"),]
 table_weekend_saturday_morning_train <- subset(table, as.Date(table$Date) >= as.Date("2006-12-16") & as.Date(table$Date) <= as.Date("2007-12-31") )
 
-## Univarite HMM
 
-# Weekday
+
+# Univarite HMMs
+
+# Weekdays
 mod4monday <- depmix(response = Global_active_power ~ 1, data = table_weekday_monday_morning_train, nstates = 4)
 fm4monday <- fit(mod4monday)
 mod5monday <- depmix(response = Global_active_power ~ 1, data = table_weekday_monday_morning_train, nstates = 5)
@@ -291,7 +307,7 @@ print(fm16monday)
 summary(fm17monday)
 print(fm17monday)
 
-## Weekend
+# Weekends
 mod4saturday <- depmix(response = Global_active_power ~ 1, data = table_weekend_saturday_morning_train, nstates = 4)
 fm4saturday <- fit(mod4saturday)
 mod5saturday <- depmix(response = Global_active_power ~ 1, data = table_weekend_saturday_morning_train, nstates = 5)
@@ -357,7 +373,6 @@ print(fm17saturday)
 # Weekdays
 
 n_times_monday_morning_train <- nrow(table_weekend_monday_morning_train)
-n_times_saturday_morning_train <- nrow(table_weekend_saturday_morning_train)
 
 weekday_monday_model_train_4 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), 
                                        data = table_weekday_monday_morning_train, 
@@ -484,6 +499,8 @@ print(weekday_monday_model_train_fit_15)
 
 # Weekends
 
+n_times_saturday_morning_train <- nrow(table_weekend_saturday_morning_train)
+
 weekend_saturday_model_train_4 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), 
                                          data = table_weekend_saturday_morning_train, 
                                          nstates = 4, 
@@ -606,19 +623,27 @@ summary(weekend_saturday_model_train_fit_15)
 print(weekend_saturday_model_train_fit_15)
 
 
+# Hardcoded BIC values (Resource intensive)
 BIC_VALUE_MONDAY <- c(28782,20384,18721,14273,21390,13047,11551,8827,4183,5122,-455,8350,6052,8605)
 BIC_VALUE_SATURDAY <- c(48729,40240,37220,35272,33224,29769,30973,27413,25418,24458,24055,24299,22747,20749)
 
+# Plot BIC curves
+plot(BIC_VALUE_MONDAY, type ="o", col="blue")
+plot(BIC_VALUE_SATURDAY, type="o",col="red")
+
+# Hardcoded Log-Likelihood values (Resource intensive)
 LOG_LIK_MONDAY <- c(-14267,-10009,-9108,-6803,-10270,-5997,-5136,-3650,-1194,-1518,1420,-2810,-1484,-2572)
 LOG_LIK_SATURDAY <- c(-24241,-19937,-18357,-17303,-16188,-14358,-14848,-12945,-11813,-11188,-10831,-10787,-9834,-8647)
 
-plot(BIC_VALUE_SATURDAY, type ="o", col="blue")
-plot(LOG_LIK_SATURDAY,type="o",col="red")
+# Plot Likelihood curves
+plot(LOG_LIK_MONDAY, type ="o", col="blue")
+plot(LOG_LIK_SATURDAY, type="o",col="red")
+
 
 
 # Principal Component Analysis (PCA)
 
-table_omit_pca <- prcomp(table_omit[,c(3,7,9,8,6,5,4)], center = TRUE,scale. = TRUE)
+table_omit_pca <- prcomp(table_omit[,c(3,7,9,8,6,5,4)], center = TRUE, scale = TRUE)
 
 summary(table_omit_pca)
 summary(table_pca)
@@ -637,30 +662,14 @@ legend("topleft", legend=c("Cut-off @ PC6"),
 
 
 
-# Part 4.
 
-#tableAnomaly1 <- read.table("~/Desktop/cmpt318groupproject/Test_Data_with_Injected_Anomalies/test1.txt",header = TRUE, sep = ",")
-#tableAnomaly1$Date <- as.POSIXlt(tableAnomaly1$Date, format = "%d/%m/%Y")
+# Performing Anomaly Detection on Test Data
 
-#tableAnomaly1 <- tableAnomaly1[which(weekdays(as.Date(tableAnomaly1$Date, format = "%m/%d/%Y"))
- #                         %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
+# Anomaly Detection - Moving Averages (Test 1)
 
-
-#table_weekday_monday_morning_Anomaly <- tableAnomaly1[strptime(tableAnomaly1$Time, format = "%H:%M:%S") >= 
-  #                                                     strptime("07:00:00", format = "%H:%M:%S") & 
-   #                                                    strptime(tableAnomaly1$Time, format = "%H:%M:%S") <=
-    #                                                   strptime("10:00:00", format = "%H:%M:%S"),]
-#table_weekday_monday_morning_train_Anomaly <- subset(table_weekday_monday_morning_Anomaly, as.Date(table_weekday_monday_morning_Anomaly$Date) >= as.Date("21-2-2010") & as.Date(table_weekday_monday_morning_Anomaly$Date) <= as.Date("27-2-2010") )
-
-
-#movingAverages = movavg(table_weekday_monday_morning_train_Anomaly$Global_active_power, n = 60 )
-
-#mA = data.frame(movingAverages)
-
-table_anomaly <- read.table("~/Desktop/cmpt318groupproject/Test_Data_with_Injected_Anomalies/test1.txt", header = TRUE, sep = ",")
+table_anomaly <- read.table("./Test_Data/test1.txt", header = TRUE, sep = ",")
 table_anomaly$Date <- as.POSIXlt(table_anomaly$Date, format = "%d/%m/%Y")
 table_omit_anomaly <- na.omit(table_anomaly, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
-
 
 table_week_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
                                                %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
@@ -696,7 +705,7 @@ movingAverages_weekend = movavg(tableSubset_weekend$Global_active_power, n = 50,
 # Plotting Averages
 plot(movingAverages)
 
-# Plotting the Difference - Change datasets 1 - 5.
+# Plotting the Difference
 plot(tableSubset$Global_active_power - movingAverages)
 
 
@@ -704,87 +713,188 @@ plot(tableSubset$Global_active_power - movingAverages)
 
 
 
-# Getting Test Data 1 - 5.
-table_anomaly1 <- read.table("~/Desktop/cmpt318groupproject/Test_Data_with_Injected_Anomalies/test3.txt", header = TRUE, sep = ",")
+# Anomaly Detection - Moving Averages (Test 2)
 
-###########################################
-# Test Data 1.
-table_anomaly1$Date <- as.POSIXlt(table_anomaly1$Date, format = "%d/%m/%Y")
-table_omit_anomaly1 <- na.omit(table_anomaly1, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+table_anomaly <- read.table("./Test_Data/test2.txt", header = TRUE, sep = ",")
+table_anomaly$Date <- as.POSIXlt(table_anomaly$Date, format = "%d/%m/%Y")
+table_omit_anomaly <- na.omit(table_anomaly, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
 
-
-table_week_anomaly1 <- table_omit_anomaly1[which(weekdays(as.Date(table_anomaly1$Date, format = "%m/%d/%Y"))
+table_week_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
                                                %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
-table_week_anomaly1['day'] <- weekdays(as.Date(table_week_anomaly1$Date, format = "%m/%d/%Y"))
+table_week_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
 
 
-table_weekend_anomaly1 <- table_omit_anomaly1[which(weekdays(as.Date(table_anomaly1$Date, format = "%m/%d/%Y"))
+
+table_weekend_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
                                                   %in% c('Saturday','Sunday')),]
-table_weekend_anomaly1['day'] <- weekdays(as.Date(table_weekend_anomaly1$Date, format = "%m/%d/%Y"))
-
-
-# Extract a year of data (31/12/2009 to 31/12/2010)
-
-
-table_day_time_weekday1 <- table_week_anomaly1[strptime(table_week_anomaly1$Time, format = "%H:%M:%S") >= 
-                                                 strptime("07:00:00", format = "%H:%M:%S") & 
-                                                 strptime(table_week_anomaly1$Time, format = "%H:%M:%S") <=
-                                                 strptime("10:00:00", format = "%H:%M:%S"),]
-tableSubset_weekday1 <- subset(table_day_time_weekday1, as.Date(table_day_time_weekday1$Date) >= as.Date("2009-12-31") & as.Date(table_day_time_weekday1$Date) <= as.Date("2010-12-31") )
+table_weekend_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
 
 
 
-table_day_time_weekend1 <- table_weekend_anomaly1[strptime(table_weekend_anomaly1$Time, format = "%H:%M:%S") >= 
-                                                    strptime("07:00:00", format = "%H:%M:%S") & 
-                                                    strptime(table_weekend_anomaly1$Time, format = "%H:%M:%S") <=
-                                                    strptime("10:00:00", format = "%H:%M:%S"),]
-tableSubset_weekend1 <- subset(table_day_time_weekend1, as.Date(table_day_time_weekend1$Date) >= as.Date("2009-12-31") & as.Date(table_day_time_weekend1$Date) <= as.Date("2010-12-31") )
+table_day_time <- table_week_anomaly[strptime(table_week_anomaly$Time, format = "%H:%M:%S") >= 
+                                       strptime("07:00:00", format = "%H:%M:%S") & 
+                                       strptime(table_week_anomaly$Time, format = "%H:%M:%S") <=
+                                       strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset <- subset(table_day_time, as.Date(table_day_time$Date) >= as.Date("2010-02-21") & as.Date(table_day_time$Date) <= as.Date("2010-02-27") )
 
 
-n_times_weekday_morning_train <- nrow(tableSubset_weekday1)
-n_times_weekend_morning_train <- nrow(tableSubset_weekend1)
-
-# 15 State model - Weekday Univariate
-mod15weekday <- depmix(response = Global_active_power ~ 1, data = tableSubset_weekday1, nstates = 15)
-fm15weekday <- fit(mod15weekday)
-
-#  17 State model - Weekend Univariate.
-mod17weekend <- depmix(response = Global_active_power ~ 1, data = tableSubset_weekend1, nstates = 17)
-fm17weekend <- fit(mod17weekend)
+table_day_time_weekend <- table_week_anomaly[strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") >= 
+                                               strptime("07:00:00", format = "%H:%M:%S") & 
+                                               strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") <=
+                                               strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset_weekend <- subset(table_day_time_weekend, as.Date(table_day_time_weekend$Date) >= as.Date("2010-02-21") & as.Date(table_day_time_weekend$Date) <= as.Date("2010-02-27") )
 
 
-# 18 State model - Weekday Multivariate
-weekday_model_train_18 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), 
-                                          data = tableSubset_weekday1, 
-                                          nstates = 18, 
-                                          ntimes=n_times_weekday_morning_train, 
-                                          family = list(gaussian(), gaussian(), gaussian()))
-weekday_model_train_fit_18 <- fit(weekday_model_train_18,em=em.control(maxit = 2000))
+movingAverages = movavg(tableSubset$Global_active_power, n = 50, "s")
+
+movingAverages_weekend = movavg(tableSubset_weekend$Global_active_power, n = 50, "s")
 
 
-# 19 State model - Weekend Multivariate.
-weekend_saturday_model_train_19 <- depmix(response = list(Global_active_power~1, Global_intensity~1 ,Voltage~1), 
-                                          data = tableSubset_weekend1, 
-                                          nstates = 19, 
-                                          ntimes=n_times_weekend_morning_train, 
-                                          family = list(gaussian(), gaussian(), gaussian()))
-weekend_model_train_fit_19 <- fit(weekend_saturday_model_train_19,em=em.control(maxit = 2000))
+# Plotting Averages
+plot(movingAverages)
+
+# Plotting the Difference
+plot(tableSubset$Global_active_power - movingAverages)
 
 
-# Weekday Univariate
-summary(fm15weekday)
-print(fm15weekday)
 
-# Weekday Multivariate
-summary(weekday_model_train_fit_18)
-print(weekday_model_train_fit_18)
 
-# Weekend Univariate
-summary(fm17weekend)
-print(fm17weekend)
 
-# Weekend Multivariate
-summary(weekend_model_train_fit_19)
-print(weekend_model_train_fit_19)
 
+# Anomaly Detection - Moving Averages (Test 3)
+
+table_anomaly <- read.table("./Test_Data/test3.txt", header = TRUE, sep = ",")
+table_anomaly$Date <- as.POSIXlt(table_anomaly$Date, format = "%d/%m/%Y")
+table_omit_anomaly <- na.omit(table_anomaly, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+
+table_week_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
+                                               %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
+table_week_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
+
+
+
+table_weekend_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
+                                                  %in% c('Saturday','Sunday')),]
+table_weekend_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
+
+
+
+table_day_time <- table_week_anomaly[strptime(table_week_anomaly$Time, format = "%H:%M:%S") >= 
+                                       strptime("07:00:00", format = "%H:%M:%S") & 
+                                       strptime(table_week_anomaly$Time, format = "%H:%M:%S") <=
+                                       strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset <- subset(table_day_time, as.Date(table_day_time$Date) >= as.Date("2010-02-21") & as.Date(table_day_time$Date) <= as.Date("2010-02-27") )
+
+
+table_day_time_weekend <- table_week_anomaly[strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") >= 
+                                               strptime("07:00:00", format = "%H:%M:%S") & 
+                                               strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") <=
+                                               strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset_weekend <- subset(table_day_time_weekend, as.Date(table_day_time_weekend$Date) >= as.Date("2010-02-21") & as.Date(table_day_time_weekend$Date) <= as.Date("2010-02-27") )
+
+
+movingAverages = movavg(tableSubset$Global_active_power, n = 50, "s")
+
+movingAverages_weekend = movavg(tableSubset_weekend$Global_active_power, n = 50, "s")
+
+
+# Plotting Averages
+plot(movingAverages)
+
+# Plotting the Difference
+plot(tableSubset$Global_active_power - movingAverages)
+
+
+
+
+
+# Anomaly Detection - Moving Averages (Test 4)
+
+table_anomaly <- read.table("./Test_Data/test4.txt", header = TRUE, sep = ",")
+table_anomaly$Date <- as.POSIXlt(table_anomaly$Date, format = "%d/%m/%Y")
+table_omit_anomaly <- na.omit(table_anomaly, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+
+table_week_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
+                                               %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
+table_week_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
+
+
+
+table_weekend_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
+                                                  %in% c('Saturday','Sunday')),]
+table_weekend_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
+
+
+
+table_day_time <- table_week_anomaly[strptime(table_week_anomaly$Time, format = "%H:%M:%S") >= 
+                                       strptime("07:00:00", format = "%H:%M:%S") & 
+                                       strptime(table_week_anomaly$Time, format = "%H:%M:%S") <=
+                                       strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset <- subset(table_day_time, as.Date(table_day_time$Date) >= as.Date("2010-02-21") & as.Date(table_day_time$Date) <= as.Date("2010-02-27") )
+
+
+table_day_time_weekend <- table_week_anomaly[strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") >= 
+                                               strptime("07:00:00", format = "%H:%M:%S") & 
+                                               strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") <=
+                                               strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset_weekend <- subset(table_day_time_weekend, as.Date(table_day_time_weekend$Date) >= as.Date("2010-02-21") & as.Date(table_day_time_weekend$Date) <= as.Date("2010-02-27") )
+
+
+movingAverages = movavg(tableSubset$Global_active_power, n = 50, "s")
+
+movingAverages_weekend = movavg(tableSubset_weekend$Global_active_power, n = 50, "s")
+
+
+# Plotting Averages
+plot(movingAverages)
+
+# Plotting the Difference
+plot(tableSubset$Global_active_power - movingAverages)
+
+
+
+
+
+# Anomaly Detection - Moving Averages (Test 5)
+
+table_anomaly <- read.table("./Test_Data/test5.txt", header = TRUE, sep = ",")
+table_anomaly$Date <- as.POSIXlt(table_anomaly$Date, format = "%d/%m/%Y")
+table_omit_anomaly <- na.omit(table_anomaly, cols=c("Global_active_power","Global_reactive_power","Voltage","Global_intensity","Sub_metering_1","Sub_metering_2","Sub_metering_3"))
+
+table_week_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
+                                               %in% c('Monday','Tuesday', 'Wednesday', 'Thursday', 'Friday','Saturday','Sunday')),]
+table_week_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
+
+
+
+table_weekend_anomaly <- table_omit_anomaly[which(weekdays(as.Date(table_anomaly$Date, format = "%m/%d/%Y"))
+                                                  %in% c('Saturday','Sunday')),]
+table_weekend_anomaly['day'] <- weekdays(as.Date(table_week_anomaly$Date, format = "%m/%d/%Y"))
+
+
+
+table_day_time <- table_week_anomaly[strptime(table_week_anomaly$Time, format = "%H:%M:%S") >= 
+                                       strptime("07:00:00", format = "%H:%M:%S") & 
+                                       strptime(table_week_anomaly$Time, format = "%H:%M:%S") <=
+                                       strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset <- subset(table_day_time, as.Date(table_day_time$Date) >= as.Date("2010-02-21") & as.Date(table_day_time$Date) <= as.Date("2010-02-27") )
+
+
+table_day_time_weekend <- table_week_anomaly[strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") >= 
+                                               strptime("07:00:00", format = "%H:%M:%S") & 
+                                               strptime(table_weekend_anomaly$Time, format = "%H:%M:%S") <=
+                                               strptime("10:00:00", format = "%H:%M:%S"),]
+tableSubset_weekend <- subset(table_day_time_weekend, as.Date(table_day_time_weekend$Date) >= as.Date("2010-02-21") & as.Date(table_day_time_weekend$Date) <= as.Date("2010-02-27") )
+
+
+movingAverages = movavg(tableSubset$Global_active_power, n = 50, "s")
+
+movingAverages_weekend = movavg(tableSubset_weekend$Global_active_power, n = 50, "s")
+
+
+# Plotting Averages
+plot(movingAverages)
+
+# Plotting the Difference
+plot(tableSubset$Global_active_power - movingAverages)
 
