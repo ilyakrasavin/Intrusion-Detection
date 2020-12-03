@@ -36,9 +36,10 @@ Folders Contain: Source Code, Training Data, Results (Images)
 
 # Credits
 Thanks to Uwe Glasser (Course Instructor) for providing invaluable knowledge and casting light on importance of Cybersecurity as a field.<br>
-Team Members:<br>
-    Yevhenii Strilets<br>
-    Ilia Krasavin<br>
-    Yoonhong Lee<br>
-    Chester Cervantes<br>
-    Jimmy Tran<br>
+Team Members:
+
+   <br>Yevhenii Strilets<br>
+   Ilia Krasavin<br>
+   Yoonhong Lee<br>
+   Chester Cervantes<br>
+   Jimmy Tran<br>
